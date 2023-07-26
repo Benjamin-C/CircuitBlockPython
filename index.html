@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CircuitBlockPython</title>
+    <!-- Set up Blockly -->
+    <script src="blockly/blockly_compressed.js"></script>
+    <script src="blockly/blocks_compressed.js"></script>
+    <script src="blockly/python_compressed.js"></script>
+    <script src="blockly/msg/en.js"></script>
+    <!-- Blocks -->
+    <script src="blocks/time.js"></script>
+    <script src="blocks/board.js"></script>
+    <script src="blocks/digitalio.js"></script>
+    <script src="blocks/analogio.js"></script>
+    <script src="blocks/pwmio.js"></script>
+    <script src="blocks/comments.js"></script>
+    <script src="blocks/math.js"></script>
+    <!-- Setup -->
+    <script src="custom-dialog.js"></script>
+    <script src="defaultsetup.js"></script>
+    <script src="toolbox.js"></script>
+
+    <style>
+        :root {
+            --fgcolor: #F80;
+        }
+
+        body {
+            background-color: #222;
+            color: #CCC;
+            font-family: sans-serif;
+        }
+        h1 {
+            font-weight: normal;
+            font-size: 140%;
+        }
+        .result {
+            width: 100%;
+            height: 100%;
+            /* padding: 10px; */
+            /* border: 5px solid gray; */
+            margin: 3px;
+            float:left
+        }
+        /* Style the div container */
+        .container {
+            position: relative;
+            min-height: 10vh;
+            border: 6px solid var(--fgcolor);
+        }
+        
+        /* Style the span element */
+        .corner-span {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: #fff;
+            font-size: 3em;
+        }
+
+        .corner-button {
+            font-size: 0.8em;
+            background-color: #0000;
+            border: 0px #0000;
+            color: var(--fgcolor)
+        }
+
+        a {
+            color: #44F;
+        }
+    </style>
+</head>
+<body>
+
+    <p>
+        <h1 style="text-align: center">
+            CircuitBlockPython - Visual <a href='https://learn.adafruit.com/welcome-to-circuitpython/what-is-circuitpython'>CircuitPython</a>&nbsp;
+            <a class="open-in-browser" href='https://developers.google.com/blockly'>
+                <img src="./logo_built_on_dark_with_bg.png" height="35vh" style="vertical-align: middle"></a>
+            by Ben
+        </h1>
+    </p>
+
+    <div id="blocklyDiv" style="height: 90vh; width: 60vw; float:left"></div>
+    <div style="float:left; width: 38vw">
+        <div id="resultDiv" style="float:left; width: 38vw" class="container">
+            <span class="corner-span">
+                <span id="status" style="position: absolute; top: 0px; color: var(--fgcolor); font-size: 0.25em;">
+            </span>
+            <button class="corner-button" onclick="showCode()" title="Update Python code">&#x27F3;</button>
+            <button class="corner-button" onclick="copyClipboard(pythonCode)" title="Copy code to clipboard">&#x2398;</button>
+            <a id="downloadbtn" class="corner-button" title="Download code"><u>&#x1F823;</u></a>
+            <button class="corner-button" onclick="save()" title="Save blocks">&#x1F5AB;</button>
+            <button class="corner-button" onclick="load()" title="Load blocks">&#x1F5C1;</button>
+        </span>
+        <span id="result" class="result"></span>
+    </div>
+    <br/>
+    <span>To upload:
+        <ol>
+            <li>Plug your microcontroller running <a onclick="openLink('https://circuitpython.org/downloads')">CircuitPython</a> into your computer. It should appear as a USB storage device. Don't unplug it if it's already plugged in </li>
+            <li>Regenerate the code by clicking the &#x27F3; button</li>
+            <li>Right click the download button (<u>&#x1F823;</u>) and choose "Save link as..."</li> 
+            <li>Save the file as <code>code.py</code> on the USB storage device</li>
+        </ol>
+        To save your work so you can edit it later, click the save button (&#x1F5AB;). To load it, click the load button (&#x1F5C1;). You must load code and generate python to use your code on your microcontroller.
+    </span></div>
+
+    <script>
+        let fgcolor = getComputedStyle(document.documentElement).getPropertyValue('--fgcolor');
+        // Toolbox is stored in toolbox.js
+        // Default workspace is stored in defaultsetup.js
+        const blockStyles = {
+            'list_blocks': {
+                'colourPrimary': '#4a148c',
+                'colourSecondary':'#AD7BE9',
+                'colourTertiary':'#CDB6E9'
+            },
+            'logic_blocks': {
+                'colourPrimary': '#01579b',
+                'colourSecondary':'#64C7FF',
+                'colourTertiary':'#C5EAFF'
+            }
+        }
+
+        const componentStyle = {
+            'workspaceBackgroundColour': '#1e1e1e',
+            'toolboxBackgroundColour': '#333',
+            'flyoutBackgroundColour': '#444',
+            'scrollbarColour': fgcolor
+        }
+
+        const theme = Blockly.Theme.defineTheme('themeName', {
+            'base': Blockly.Themes.Classic,
+            'blockStyles': blockStyles,
+            // 'categoryStyles': {...},
+            'componentStyles': componentStyle,
+            // 'fontStyle': {...},
+            'startHats': true
+        });
+
+        var demoWorkspace = Blockly.inject('blocklyDiv',
+        {media: './node_modules/blockly/media/',
+        toolbox: toolbox,
+        grid: {
+            spacing: 20,
+            length: 5,
+            colour: '#444',
+            snap: true },
+        sounds: false,
+        theme: theme,
+        zoom:
+         {controls: true,
+          wheel: true,
+          startScale: 1.0,
+          maxScale: 30,
+          minScale: 0.03,
+          scaleSpeed: 1.02,
+          pinch: true},
+        });
+        
+        Blockly.serialization.workspaces.load(startBlocks, demoWorkspace);
+        
+        function showStatus(msg) {
+            document.getElementById("status").innerHTML = msg;
+            setTimeout(() => {
+                document.getElementById("status").innerHTML = "";
+            }, "3000");
+        }
+
+        var pythonCode = "";
+
+        function showCode() {
+            // Generate Python code and display it.
+            python.pythonGenerator.INFINITE_LOOP_TRAP = null;
+            pythonCode = python.pythonGenerator.workspaceToCode(demoWorkspace);
+            document.getElementById("result").innerHTML = "<pre id=\"renderedcode\" class=\"\">" + pythonCode + "</pre>";
+            prepDownloadText("downloadbtn", pythonCode, "code.py");
+            showStatus("Generated");
+        }
+
+        function copyClipboard(text) {
+            // Create a temporary textarea element to hold the content
+            // const tempTextArea = document.createElement('textarea');
+            // tempTextArea.value = text;
+            // document.body.appendChild(tempTextArea);
+            // // Select the content and copy it to the clipboard
+            // tempTextArea.select();
+            // document.execCommand('copy');
+            // // Remove the temporary textarea
+            // document.body.removeChild(tempTextArea);
+            navigator.clipboard.writeText(text);
+            showStatus("Copied");
+        }
+
+        function save() {
+            const state = Blockly.serialization.workspaces.save(demoWorkspace);
+            downloadFile(JSON.stringify(state), "Save block as", "blocks.json");
+            showStatus("Done");
+        }
+
+        let readFile = function(path) {
+            let reader = new FileReader();
+            
+            reader.onload = function(e) {
+                var text = reader.result;
+                console.log(text);
+            };
+            
+            // Read in the image file as a data URL.
+            reader.readAsText(MissingFileHandle);
+        };
+
+        function load() {
+            var hiddenElement = document.createElement('input');
+            hiddenElement.type = 'file';
+            hiddenElement.target = '_blank';
+            hiddenElement.download = name;
+
+            function readSingleFile(e) {
+                var file = e.target.files[0];
+                if (!file) {
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var contents = e.target.result;
+                    try {
+                        let blocks = JSON.parse(contents);
+                        Blockly.serialization.workspaces.load(blocks, demoWorkspace);
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error loading blocks");
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            hiddenElement.addEventListener('change', readSingleFile, false);
+            hiddenElement.click();
+            hiddenElement.remove();
+        }
+
+        function prepDownloadText(id, textToSave, name) {
+            var hiddenElement = document.getElementById(id);
+            hiddenElement.href = 'data:plain/text,' + encodeURIComponent(textToSave);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = name;
+        }
+
+        function downloadFile(textToSave, promptText, name, direct) {
+            if(direct != true) {
+                var name = prompt(promptText, name);
+                if(name == undefined) {
+                    return;
+                }
+            }
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:plain/text,' + encodeURIComponent(textToSave);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = name;
+            hiddenElement.click();
+            hiddenElement.remove();
+        }
+
+        document.getElementById("downloadbtn").addEventListener("click", (event) => {
+            event.preventDefault();
+            if(!confirm("Right click and 'save link as...' to save the code directly to your microcontroller. Or, press 'cancel' to save the code to your downloads folder")) {
+                var textToSave = document.getElementById("renderedcode").innerHTML;
+                downloadFile(textToSave, "Save code as", "code.py");
+            }
+        });
+
+        showCode();
+    </script>
+
+    <script src="custom-dialog.js"></script>
+    
+    <script>
+        function openLink(url) {
+            // Use this if you're running on Electron
+            // window.electronAPI.openLinkExternally(url);
+            window.open(url);
+        }
+    </script>
+        
+</body>
+</html>
