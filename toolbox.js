@@ -1,3 +1,4 @@
+// Edit this JSON to set up the toolbox on the left where the blocks are stored
 var toolbox = {
     "kind":"categoryToolbox",
     "contents":[

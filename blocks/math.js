@@ -1,3 +1,6 @@
+// A few of the default math opperations didn't work or behaved weirdly, so I replaced them with my own
+
+// Basic math operations. Included exponents, integer division, and modulo which were not in the default version
 Blockly.Blocks['math_operation'] = {
     init: function() {
         this.appendValueInput("A")
@@ -31,6 +34,7 @@ python.pythonGenerator.forBlock['math_operation'] = function(block, generator) {
     return ["(" + code + ")", Blockly.Python.ORDER_ATOMIC];
 };
 
+// The default compare was just weird, so I made my own that made more sense to me
 Blockly.Blocks['math_compare'] = {
     init: function() {
         this.appendValueInput("A")
@@ -61,6 +65,7 @@ python.pythonGenerator.forBlock['math_compare'] = function(block, generator) {
     return [code, Blockly.Python.ORDER_RELATIONAL];
 };
     
+// Make something into an int
 Blockly.Blocks['math_int'] = {
     init: function() {
         this.appendValueInput("NUM")

@@ -1,3 +1,6 @@
+// https://docs.circuitpython.org/en/latest/shared-bindings/board/index.html
+// Currently set up for Raspberry Pi Pico
+ 
 Blockly.Blocks['board_digital_pin'] = {
     init: function() {
         this.appendDummyInput()
@@ -32,8 +35,8 @@ Blockly.Blocks['board_digital_pin'] = {
             ["board.GP25","board.GP28"]]), "PIN");
         this.setOutput(true, "board_type_digitalpin");
         this.setColour(240);
-        this.setTooltip("Execute custom Python Code");
-        this.setHelpUrl("http://www.bipes.net.br");
+        this.setTooltip("");
+        this.setHelpUrl("");
     }
 };
 
@@ -56,8 +59,8 @@ Blockly.Blocks['board_analog_pin'] = {
             ["board.A3","board.A3"]]), "PIN");
         this.setOutput(true, "board_type_analogpin");
         this.setColour(240);
-        this.setTooltip("Execute custom Python Code");
-        this.setHelpUrl("http://www.bipes.net.br");
+        this.setTooltip("");
+        this.setHelpUrl("");
     }
 };
 

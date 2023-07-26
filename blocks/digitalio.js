@@ -1,3 +1,4 @@
+// https://docs.circuitpython.org/en/latest/shared-bindings/digitalio/index.html
 Blockly.Blocks['digitalio_init'] = {
     init: function() {
         this.appendValueInput("BOARDPIN")

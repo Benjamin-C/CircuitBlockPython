@@ -73,6 +73,7 @@
 </head>
 <body>
 
+    <!-- Headder -->
     <p>
         <h1 style="text-align: center">
             CircuitBlockPython - Visual <a href='https://learn.adafruit.com/welcome-to-circuitpython/what-is-circuitpython'>CircuitPython</a>&nbsp;
@@ -83,9 +84,12 @@
         </h1>
     </p>
 
+    <!-- Main area -->
     <div id="blocklyDiv" style="height: 90vh; width: 60vw; float:left"></div>
     <div style="float:left; width: 38vw">
+        <!-- Right pane -->
         <div id="resultDiv" style="float:left; width: 38vw" class="container">
+            <!-- Corner buttons -->
             <span class="corner-span">
                 <span id="status" style="position: absolute; top: 0px; color: var(--fgcolor); font-size: 0.25em;">
             </span>
@@ -95,9 +99,11 @@
             <button class="corner-button" onclick="save()" title="Save blocks">&#x1F5AB;</button>
             <button class="corner-button" onclick="load()" title="Load blocks">&#x1F5C1;</button>
         </span>
+        <!-- Main code area -->
         <span id="result" class="result"></span>
     </div>
     <br/>
+    <!-- Instructions below code area -->
     <span>To upload:
         <ol>
             <li>Plug your microcontroller running <a onclick="openLink('https://circuitpython.org/downloads')">CircuitPython</a> into your computer. It should appear as a USB storage device. Don't unplug it if it's already plugged in </li>
@@ -109,9 +115,12 @@
     </span></div>
 
     <script>
+        // This is the main script that controls the editor. It should probably be moved to its own file, but for now it is not, so too bad.
         let fgcolor = getComputedStyle(document.documentElement).getPropertyValue('--fgcolor');
         // Toolbox is stored in toolbox.js
         // Default workspace is stored in defaultsetup.js
+
+        // Set the theme
         const blockStyles = {
             'list_blocks': {
                 'colourPrimary': '#4a148c',
@@ -124,14 +133,12 @@
                 'colourTertiary':'#C5EAFF'
             }
         }
-
         const componentStyle = {
             'workspaceBackgroundColour': '#1e1e1e',
             'toolboxBackgroundColour': '#333',
             'flyoutBackgroundColour': '#444',
             'scrollbarColour': fgcolor
         }
-
         const theme = Blockly.Theme.defineTheme('themeName', {
             'base': Blockly.Themes.Classic,
             'blockStyles': blockStyles,
@@ -141,17 +148,18 @@
             'startHats': true
         });
 
+        // Configure the workspace
         var demoWorkspace = Blockly.inject('blocklyDiv',
         {media: './node_modules/blockly/media/',
         toolbox: toolbox,
-        grid: {
+        grid: { // Turn on a grid
             spacing: 20,
             length: 5,
             colour: '#444',
             snap: true },
-        sounds: false,
+        sounds: false, // Be quiet
         theme: theme,
-        zoom:
+        zoom: // Allow zooming
          {controls: true,
           wheel: true,
           startScale: 1.0,
@@ -161,8 +169,10 @@
           pinch: true},
         });
         
+        // Load the default workspace
         Blockly.serialization.workspaces.load(startBlocks, demoWorkspace);
         
+        // Shows a little status message just above the buttons in the code viewer box
         function showStatus(msg) {
             document.getElementById("status").innerHTML = msg;
             setTimeout(() => {
@@ -170,10 +180,11 @@
             }, "3000");
         }
 
+        // The generated code
         var pythonCode = "";
 
+        // Generate Python code and display it.
         function showCode() {
-            // Generate Python code and display it.
             python.pythonGenerator.INFINITE_LOOP_TRAP = null;
             pythonCode = python.pythonGenerator.workspaceToCode(demoWorkspace);
             document.getElementById("result").innerHTML = "<pre id=\"renderedcode\" class=\"\">" + pythonCode + "</pre>";
@@ -181,38 +192,20 @@
             showStatus("Generated");
         }
 
+        // Copy the text in 'text' to the users clipboard. Can only be triggered by a user interaction
         function copyClipboard(text) {
-            // Create a temporary textarea element to hold the content
-            // const tempTextArea = document.createElement('textarea');
-            // tempTextArea.value = text;
-            // document.body.appendChild(tempTextArea);
-            // // Select the content and copy it to the clipboard
-            // tempTextArea.select();
-            // document.execCommand('copy');
-            // // Remove the temporary textarea
-            // document.body.removeChild(tempTextArea);
             navigator.clipboard.writeText(text);
             showStatus("Copied");
         }
 
+        // Downloads the workspace block configuration as a JSON file
         function save() {
             const state = Blockly.serialization.workspaces.save(demoWorkspace);
             downloadFile(JSON.stringify(state), "Save block as", "blocks.json");
             showStatus("Done");
         }
 
-        let readFile = function(path) {
-            let reader = new FileReader();
-            
-            reader.onload = function(e) {
-                var text = reader.result;
-                console.log(text);
-            };
-            
-            // Read in the image file as a data URL.
-            reader.readAsText(MissingFileHandle);
-        };
-
+        // Loads the workspace block configuration from the user's computer
         function load() {
             var hiddenElement = document.createElement('input');
             hiddenElement.type = 'file';
@@ -243,6 +236,7 @@
             hiddenElement.remove();
         }
 
+        // Sets up the download button as a link that can be right clicked to save to a specific location on the user's computer
         function prepDownloadText(id, textToSave, name) {
             var hiddenElement = document.getElementById(id);
             hiddenElement.href = 'data:plain/text,' + encodeURIComponent(textToSave);
@@ -250,6 +244,11 @@
             hiddenElement.download = name;
         }
 
+        /* Downloads a file to the user's computer.
+         * promptText is the text to show on the save name dialog.
+         * name is the default filename to download as.
+         * direct controls wether or not to prompt the user asking for a file name 
+         */
         function downloadFile(textToSave, promptText, name, direct) {
             if(direct != true) {
                 var name = prompt(promptText, name);
@@ -265,6 +264,7 @@
             hiddenElement.remove();
         }
 
+        // Show a warning message if the user left clicks download button 
         document.getElementById("downloadbtn").addEventListener("click", (event) => {
             event.preventDefault();
             if(!confirm("Right click and 'save link as...' to save the code directly to your microcontroller. Or, press 'cancel' to save the code to your downloads folder")) {
@@ -273,10 +273,12 @@
             }
         });
 
+        // Update the Python code on page load
         showCode();
     </script>
 
-    <script src="custom-dialog.js"></script>
+    <!-- Needed in NodeJS, but not on the web -->
+    <!-- <script src="custom-dialog.js"></script> -->
     
     <script>
         function openLink(url) {

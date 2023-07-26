@@ -1,3 +1,4 @@
+// https://docs.circuitpython.org/en/latest/shared-bindings/pwmio/index.html
 Blockly.Blocks['pwmio_out_init'] = {
     init: function() {
         this.appendValueInput("BOARDPIN")

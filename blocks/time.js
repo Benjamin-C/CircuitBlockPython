@@ -1,3 +1,4 @@
+// https://docs.python.org/3/library/time.html
 Blockly.Blocks['time_sleep'] = {
     init: function() {
         this.appendValueInput("TIME")

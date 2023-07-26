@@ -1,3 +1,4 @@
+// Comment your code!
 Blockly.Blocks['comment'] = {
     init: function() {
         this.appendDummyInput()
@@ -18,6 +19,7 @@ python.pythonGenerator.forBlock['comment'] = function(block, generator) {
     return code;
 };
 
+// Formats a variable using a format string
 Blockly.Blocks['format_string'] = {
     init: function() {
         this.appendValueInput("VAR")
@@ -43,7 +45,7 @@ python.pythonGenerator.forBlock['format_string'] = function(block, generator) {
     return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-
+// The format part of a format string
 Blockly.Blocks['format_string_control'] = {
     init: function() {
         this.appendDummyInput()
@@ -58,12 +60,11 @@ Blockly.Blocks['format_string_control'] = {
 
 python.pythonGenerator.forBlock['format_string_control'] = function(block, generator) {
     var text_fmt = block.getFieldValue('FMT');
-    // TODO: Assemble python into code variable.
     var code = text_fmt;
-    // TODO: Change ORDER_NONE to the correct strength.
     return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
+// Run a line of python directly
 Blockly.Blocks['run_python'] = {
     init: function() {
         this.appendDummyInput()

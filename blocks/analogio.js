@@ -1,3 +1,4 @@
+// https://docs.circuitpython.org/en/latest/shared-bindings/analogio/index.html
 Blockly.Blocks['analogio_in_init'] = {
     init: function() {
         this.appendValueInput("BOARDPIN")
