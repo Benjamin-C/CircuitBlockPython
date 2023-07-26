@@ -158,10 +158,11 @@ var toolbox = {
     },
     {
         "kind":"category",
-        "name":"Comment",
+        "name":"Utils",
         "categorystyle":"text_category",
         "contents":[
         { "kind":"block", "type":"comment" },
+        { "kind":"block", "type":"run_python" },
         ]
     },
     { "kind":"block", "type":"comment" },
