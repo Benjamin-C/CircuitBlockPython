@@ -175,8 +175,8 @@ var toolbox = {
         "name":"time",
         "categorystyle":"list_category",
         "contents":[
-        { "kind":"block", "type":"time_sleep" },
-        { "kind":"block", "type":"time_monotonic",
+        { "kind":"block", "type":"time_monotonic" },
+        { "kind":"block", "type":"time_sleep",
         "inputs":{
             "TIME":{
                 "block":{ "type":"math_number", "fields":{ "NUM":1, } }
